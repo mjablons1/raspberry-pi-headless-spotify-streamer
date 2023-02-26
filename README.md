@@ -6,9 +6,9 @@
            margin-left: auto;
            margin-right: auto;
            width: 70%;"
-	src="graphics/concept_diagram.svg"/>
+	src="graphics/concept_diagram.png"/>
 
-If you want to easily control your spotify streaming from any spotify client session, playback high quality and, once configured, forget all about your RPI streamer, this is for you.
+If you want to easily control your spotify streaming from any spotify client session, playback high quality and, once configured, forget all about your RPi streamer, this is for you.
 
 Its
 
@@ -18,17 +18,17 @@ Its
 
 	<details>
 	<summary>Click to learn more</summary>
-    * The streaming device does not have to authenticate itself into the streaming service, only your mobile phone app does the way you normally use it. This greatly simplifies the setup or improves the security in case you'd otherwise come up with the bad idea to put your credentials in plain into some config file... (dont!)
+    * The streaming device does not have to authenticate itself into the streaming service, only your mobile phone app does the way you normally use it. This greatly simplifies the setup or improves the security in case you'd otherwise come up with the bad idea to put your credentials in plain into some config file... (don't!)
 	</details>
 
 ## Prerequisites
 
 * Spotify account and Spotify app installed on any computer or mobile device 
-	* this will be now used just as authentication, music browsing and remote control session, the bare-bones straeming will be offloaded to RPI
+	* this will be now used just as authentication, music browsing and remote control session, the bare-bones streaming will be offloaded to RPI
 * Rpi (I used Rpi 2B equipped with a USB WIFI adapter and with Debian 11, bullseye image)
 * USB class-compliant audio interface (I used MOTU M6)
 
-The key software component will be an application called [spotifyd](https://github.com/Spotifyd/spotifyd). What's most interesting for us is that spotifyd supports Spotify Connect which is a feature that makes your rpi show up as a viable playback device in your offical spotify application. You can find all instructions how to get it working here [Spotifyd Wiki](https://spotifyd.github.io/spotifyd/installation/Raspberry-Pi.html?search=ystesystem). 
+The key software component will be an application called [spotifyd](https://github.com/Spotifyd/spotifyd). What's most interesting for us is that spotifyd supports Spotify Connect which is a feature that makes your rpi show up as a viable playback device in your official spotify application. You can find all instructions how to get it working here [Spotifyd Wiki](https://spotifyd.github.io/spotifyd/installation/Raspberry-Pi.html?search=ystesystem). 
 
 Thanks, bye!
 
@@ -46,7 +46,7 @@ To make full use of your audio interface while streaming off Rpi a few details n
 
 ## The setup (starting from the beginig)
 
-We will first define a service in Debian to make it simple for spotifyd to be launched each time the system boots, without the need of any intervention from the user. We set off by creating a service dfinition file (you need to copy a file template from below so its best to start from desktop first):
+We will first define a service in Debian to make it simple for spotifyd to be launched each time the system boots, without the need of any intervention from the user. We set off by creating a service definition file (you need to copy a file template from below so its best to start from desktop first):
 
 ```console
 startx
@@ -139,7 +139,7 @@ While it worked for me like this i heard:
            margin-right: auto;
 		   margin-bottom: 0%;
            width: 50%;"
-	src="graphics/rpi_effort.svg" />
+	src="graphics/rpi_effort.png" />
 
 ## Optimization
 
@@ -201,7 +201,7 @@ After restarting the spotifyd service should start automatically and make your r
 
 ### Check hw capability settings to check what sampling rate is actually used
 
-In my case I could find my hw capabilties here: (M6 directory name is specific to my interface):
+In my case I could find my hw capabilities here: (M6 directory name is specific to my interface):
 
 ```console
 cat /proc/asound/M6/stream0
@@ -254,12 +254,7 @@ pacmd list-sinks
 
 Sample rate and buffer size are definitely two points that could use some improvements. 
 
-----------------
-
-<details>
-<summary>Click to expand</summary>
-
-I started looking for some alsa config files that would contain these settings but could not find any. It turned out that Debian uses Pulseaudio server between your app and alsa and it happens to control sample rate and buffer sizes, alsa just consumes them:
+I initially started looking for some alsa config files that would contain these settings but could not find any. It turned out that Debian uses Pulseaudio server between your app and alsa and it happens to control sample rate and buffer sizes, alsa just consumes them:
 
 <img 
     style="display: block; 
@@ -268,7 +263,7 @@ I started looking for some alsa config files that would contain these settings b
            margin-right: auto;
 		   margin-bottom: 0%;
            width: 60%;"
-	src="graphics/streaming_path.svg" />
+	src="graphics/streaming_path.png" />
 
 AS a separate item, we have the performance issue (sill occasional clicks even in cmd line mode) To see what's cooking with the performance
 
@@ -276,7 +271,7 @@ AS a separate item, we have the performance issue (sill occasional clicks even i
 top
 ```
 
-Both Pulseaudio and Spotifyd consumed 15-25% of the CPU time each.... thats way too much!
+Both Pulseaudio and Spotifyd consumed 15-25% of the CPU time each.... thats way too much! Let's see what can be done.
 
 
 </details>
@@ -303,7 +298,7 @@ cp /etc/pulse/daemon.conf ~/.config/pulse/
 vim ~/.config/pulse/daemon.conf
 ```
 
-This file readily contains a lot of commented defaults. Dont forget to remove the semicolon before each line you wish to modify, here are the ones I modified (I checked quite a few combination but tried to make as few changes as possible in the end since I'm otherwise a great fan of, well, default defaults):
+This file readily contains a lot of commented defaults. Don't forget to remove the semicolon before each line you wish to modify, here are the ones I modified (I checked quite a few combination but tried to make as few changes as possible in the end since I'm otherwise a great fan of, well, default defaults):
 
 ```console
 -----daemon.conf-------------------------------
@@ -334,7 +329,7 @@ default-fragment-size-msec = 200
 
 <details>
 <summary>Click to expand</summary>
-The default resampling was actually optimized for computation but since this impacts quality i have eventually pushed it up to sinc resampling. To offset that computation cost (and probably few other) in half I set <a href="https://wiki.archlinux.org/title/PulseAudio#Configuration">enable-remixing = no</a>   - this effectively reduced streaming from 4 channels to 2 channels only. Checking with CPU loads pulseaudio went to about half right a way. The last settings set a huge, 2x200ms buffer to minimize clicks from buffer underrun. (this also puts a large lag between your app controls and the sound output but then think of how expensive RPI4 is and forget all about it)
+The default resampling was actually optimized for computation but since this impacts quality i have eventually pushed it up to sinc resampling. To offset that computation cost (and probably few other) in half I set <a href="https://wiki.archlinux.org/title/PulseAudio#Configuration">enable-remixing = no</a>   - this effectively reduced streaming from 4 channels to 2 channels only. Checking with CPU loads Pulseaudio went to about half right a way. The last settings set a huge, 2x200ms buffer to minimize clicks from buffer underrun. (this also puts a large lag between your app controls and the sound output but then think of how expensive RPI4 is and forget all about it)
 
 </textarea>
 
@@ -342,7 +337,7 @@ The default resampling was actually optimized for computation but since this imp
 
 ----
 
-After making these changes restart the pulseaudio and spotify services and check again the alsa settings to confirm the new settings are in effect, you should see sample rate and buffer size updated now:
+After making these changes restart the Pulseaudio and spotifyd services and check again the alsa settings to confirm the new settings are in effect, you should see sample rate and buffer size updated now:
 
 ```console
 systemctl --user restart pulseaudio.service 
@@ -352,15 +347,15 @@ pacmd list-sinks
 
 ----
 
-This is it. With all these changes I was finally happy with the sound quality (and I'm reall a pain-in-the-ass guy in that respect as you can tell by now). 
+This is it. With all these changes I was finally happy with the sound quality (and I'm a real pain-in-the-ass guy in that respect, as you can tell by now). 
 
 <details>
 
 <summary>Click to expand</summary>
 
-I noticed much later that with very very loud music that uses compressors src-sinc-best-qualty actually causes clipping. You can overcome this by pulling spotify app volume down by a nod or two though. You can also try other resampling methods.
+I noticed much later that with very very loud music that uses compressors src-sinc-best-quality actually causes clipping. You can overcome this by pulling spotify app volume down by a nod or two though. You can also try other resampling methods.
 
-In this place some of you may wonder what should upsampling change. It's definitely a good question and I have no clear answer to that, after all when we upsample we begin signal reconstruction starting at the sample data as streaming from the service provider. This said I can hear a clear improvement going from 41kHz to 96kHz. I expect that, for once, some of the materials are in 48kHz format to begin with so we dont squander that down to 41kHz. Moreover, by upsampling we actually increase the bit depth of the data points above 16bit and that may be audible as well. Finally we've reduced the compression by requesting 320kB/s data stream instead of the default 160kB/s - here there i no doubt this is audible and has pretty much the same effect as going from normal to very high sound quality setting in the official spotify app.
+In this place some of you may wonder what should resampling change. It's definitely a good question and I have no clear answer to that, after all when we resample we begin signal reconstruction starting at the sample data as streaming from the service provider. This said I can hear a clear improvement going from 41kHz to 96kHz. I expect that, for once, some of the materials are in 48kHz format to begin with so we don't squander that down to 41kHz. Moreover, by upsampling we actually increase the bit depth of the data points above 16bit and that may be audible as well. Finally we've reduced the compression by requesting 320kB/s data stream instead of the default 160kB/s - here there i no doubt this is audible and has pretty much the same effect as going from normal to very high sound quality setting in the official spotify app.
 
 </textarea>
 
@@ -369,7 +364,7 @@ In this place some of you may wonder what should upsampling change. It's definit
 ----
 
 ## Summary:
-I run this setup for several weeks now and havent noticed any problems with it. It's stable whether I choose to keep RPI on all the time or shut it down between sessions. I still get an occasional clip once in a while but then i think of how expensive RPI 4 is and that puts a balm on it. I hope you get to enjoy it as much as I do! 
+I run this setup for several weeks now and haven't noticed any problems with it. It's stable whether I choose to keep RPI on all the time or shut it down between sessions. I still get an occasional clip once in a while but then i think of how expensive RPI 4 is and that puts a balm on it. I hope you get to enjoy it as much as I do! 
 
 Let me know your experience in discussion. Cheers! 
 
