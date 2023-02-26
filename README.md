@@ -13,8 +13,8 @@ If you want to easily control your spotify streaming from any spotify client ses
 Its
 
 * Easy to set up and easy to run.
-* Robust against rpi restarts.
-* RPI does not need to "know" your spotify credentials.
+* Robust against RPi restarts.
+* RPi does not need to "know" your spotify credentials.
 
 	<details>
 	<summary>Click to learn more</summary>
@@ -24,11 +24,11 @@ Its
 ## Prerequisites
 
 * Spotify account and Spotify app installed on any computer or mobile device 
-	* this will be now used just as authentication, music browsing and remote control session, the bare-bones streaming will be offloaded to RPI
-* Rpi (I used Rpi 2B equipped with a USB WIFI adapter and with Debian 11, bullseye image)
+	* this will be now used just as authentication, music browsing and remote control session, the bare-bones streaming will be offloaded to RPi
+* RPi (I used RPi 2B equipped with a USB WIFI adapter and with Debian 11, bullseye image)
 * USB class-compliant audio interface (I used MOTU M6)
 
-The key software component will be an application called [spotifyd](https://github.com/Spotifyd/spotifyd). What's most interesting for us is that spotifyd supports Spotify Connect which is a feature that makes your rpi show up as a viable playback device in your official spotify application. You can find all instructions how to get it working here [Spotifyd Wiki](https://spotifyd.github.io/spotifyd/installation/Raspberry-Pi.html?search=ystesystem). 
+The key software component will be an application called [spotifyd](https://github.com/Spotifyd/spotifyd). What's most interesting for us is that spotifyd supports Spotify Connect which is a feature that makes your RPi show up as a viable playback device in your official spotify application. You can find all instructions how to get it working here [Spotifyd Wiki](https://spotifyd.github.io/spotifyd/installation/Raspberry-Pi.html?search=ystesystem). 
 
 Thanks, bye!
 
@@ -39,7 +39,7 @@ Thanks, bye!
 
 If you are any demanding you will notice immediately that the audio quality with the defaults is much worse than streaming directly from your laptop over USB into your audio interface. 
 
-To make full use of your audio interface while streaming off Rpi a few details need polishing. This article is mainly to help you know what need to be changed and where to get good audio quality while running within the computation limits of even an old RPI like the B2.
+To make full use of your audio interface while streaming off RPi a few details need polishing. This article is mainly to help you know what need to be changed and where to get good audio quality while running within the computation limits of even an old RPi like the B2.
  </details>
  
  -----------------
@@ -91,7 +91,7 @@ This file tells Linux what application to start (ExecStart) - we'll put spotifyd
 
 -----------------
 
-Now its time to pull spotifyd application. There are a few builds for Debian readily available, in case of my Rpi2 B the URL is a match for the ARMv7 architecture. In case you use older or newer RPI still you may have to look around to match the [correct build](https://github.com/Spotifyd/spotifyd/releases).
+Now its time to pull spotifyd application. There are a few builds for Debian readily available, in case of my RPi2 B the URL is a match for the ARMv7 architecture. In case you use older or newer RPi still you may have to look around to match the [correct build](https://github.com/Spotifyd/spotifyd/releases).
 
 ```console
 wget -O spotifyd-linux.tar.gz https://github.com/Spotifyd/spotifyd/releases/download/v0.3.4/spotifyd-linux-armhf-default.tar.gz
@@ -109,7 +109,7 @@ systemctl --user start spotifyd.service
 systemctl --user enable spotifyd.service
 ```
 
-At this point already the streaming functionality should be there. **For as long as your RPI and your mobile phone are in the same wifi network** your mobile app session should now see your rpi as a playback device.
+At this point already the streaming functionality should be there. **For as long as your RPi and your mobile phone are in the same wifi network** your mobile app session should now see your RPi as a playback device.
 
 <img 
     style="display: block; 
@@ -143,7 +143,7 @@ While it worked for me like this i heard:
 
 ## Optimization
 
-Since this is old RPI and we are in a desktop env it should be expected to sweat and perhaps not all hope is lost, if we can boot to cmd line instead the CPU loads should be much lower. We can also tweak some defaults for sound quality that may be low. Therefore now come the optimization part!
+Since this is old RPi and we are in a desktop env it should be expected to sweat and perhaps not all hope is lost, if we can boot to cmd line instead the CPU loads should be much lower. We can also tweak some defaults for sound quality that may be low. Therefore now come the optimization part!
 
 ### Set the maximum streaming bitrate in spotifyd
 
@@ -169,7 +169,7 @@ bitrate = 320
 -------------------------------
 ```
 
-### Ensure your Rpi does not go to desktop on boot. 
+### Ensure your RPi does not go to desktop on boot. 
 
 ```console
 sudo raspi-config
@@ -181,7 +181,7 @@ Set boot to command line. Also, ensure the option to get automatically logged in
 <details>
 <summary>Click to learn more</summary>
 
-You can prevent spotifyd service from stopping in case you'd log out (in case you plan to do something else on your RPI while streaming)
+You can prevent spotifyd service from stopping in case you'd log out (in case you plan to do something else on your RPi while streaming)
 
 ```console
 sudo loginctl enable-linger username
@@ -197,7 +197,7 @@ Kiss your desktop last goodbye and...
 sudo reboot now
 ```
 
-After restarting the spotifyd service should start automatically and make your rpi visible as playback device on your mobile phone really quickly now. You should hear less clicks, hopefully. Quality still more or less terrible. Excited? Lets optimize some more.
+After restarting the spotifyd service should start automatically and make your RPi visible as playback device on your mobile phone really quickly now. You should hear less clicks, hopefully. Quality still more or less terrible. Excited? Lets optimize some more.
 
 ### Check hw capability settings to check what sampling rate is actually used
 
@@ -329,7 +329,7 @@ default-fragment-size-msec = 200
 
 <details>
 <summary>Click to expand</summary>
-The default resampling was actually optimized for computation but since this impacts quality i have eventually pushed it up to sinc resampling. To offset that computation cost (and probably few other) in half I set <a href="https://wiki.archlinux.org/title/PulseAudio#Configuration">enable-remixing = no</a>   - this effectively reduced streaming from 4 channels to 2 channels only. Checking with CPU loads Pulseaudio went to about half right a way. The last settings set a huge, 2x200ms buffer to minimize clicks from buffer underrun. (this also puts a large lag between your app controls and the sound output but then think of how expensive RPI4 is and forget all about it)
+The default resampling was actually optimized for computation but since this impacts quality i have eventually pushed it up to sinc resampling. To offset that computation cost (and probably few other) in half I set <a href="https://wiki.archlinux.org/title/PulseAudio#Configuration">enable-remixing = no</a>   - this effectively reduced streaming from 4 channels to 2 channels only. Checking with CPU loads Pulseaudio went to about half right a way. The last settings set a huge, 2x200ms buffer to minimize clicks from buffer underrun. (this also puts a large lag between your app controls and the sound output but then think of how expensive RPi4 is and forget all about it)
 
 </textarea>
 
@@ -364,7 +364,7 @@ In this place some of you may wonder what should resampling change. It's definit
 ----
 
 ## Summary:
-I run this setup for several weeks now and haven't noticed any problems with it. It's stable whether I choose to keep RPI on all the time or shut it down between sessions. I still get an occasional clip once in a while but then i think of how expensive RPI 4 is and that puts a balm on it. I hope you get to enjoy it as much as I do! 
+I run this setup for several weeks now and haven't noticed any problems with it. It's stable whether I choose to keep RPi on all the time or shut it down between sessions. I still get an occasional clip once in a while but then i think of how expensive RPi 4 is and that puts a balm on it. I hope you get to enjoy it as much as I do! 
 
 Let me know your experience in discussion. Cheers! 
 
