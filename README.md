@@ -57,7 +57,10 @@ nano ~/.config/systemd/user/spotifyd.service
 copy and save below content to the service file:
 
 ```console
----------------------spotifyd.service----------------------------
+-----spotifyd.service------------------------------
+```
+
+```console
 [Unit]
 Description=A spotify playing daemon
 Documentation=https://github.com/Spotifyd/spotifyd
@@ -73,7 +76,10 @@ RestartSec=12
 
 [Install]
 WantedBy=default.target
-----------------------------------------------------------------------------
+```
+
+```console
+----------------------------------------------------
 ```
 
 -----------------
@@ -150,11 +156,17 @@ vim ~/.config/spotifyd/spotifyd.conf
 Copy below content to the file and save it
 
 ```console
------------spotifyd.conf------------
+-----spotifyd.conf------------
+```
+
+```console
 [global]
 device_name = "spotifyd@rpi2"
 bitrate = 320
-------------------------------------
+```
+
+```console
+-------------------------------
 ```
 
 ### Ensure your Rpi does not go to desktop on boot. 
@@ -294,7 +306,10 @@ vim ~/.config/pulse/daemon.conf
 This file readily contains a lot of commented defaults. Dont forget to remove the semicolon before each line you wish to modify, here are the ones I modified (I checked quite a few combination but tried to make as few changes as possible in the end since I'm otherwise a great fan of, well, default defaults):
 
 ```console
---------daemon.conf-------------------------------
+-----daemon.conf-------------------------------
+```
+
+```console
 ...
 resample-method = src-sinc-best-quality
 ; avoid-resampling = false
@@ -308,9 +323,13 @@ default-sample-rate = 96000
 
 default-fragments = 2
 default-fragment-size-msec = 200
-....
---------------------------------------------------
+...
 ```
+
+```console
+------------------------------------------------
+```
+
 ----
 
 <details>
