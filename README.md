@@ -291,7 +291,6 @@ Pulseaudio and Spotifyd consumed 15-25% of the CPU time each.... thats way too m
 <summary>Click to learn more</summary>
 
 <a href="https://wiki.archlinux.org/title/PulseAudio#Configuration">NOTE FROM DOCUMENTATION:</a> PulseAudio will first look for configuration files in the home directory ~/.config/pulse/, and if they are not found, the system-wide configuration from /etc/pulse/ will be applied. It is strongly suggested not to edit system-wide configuration files, but rather edit user ones. Create the ~/.config/pulse directory, then copy the system configuration files into it and edit according to your need.
-</textarea>
 
 </details>
 
@@ -361,8 +360,6 @@ This is it. With these changes I was finally happy with the sound quality (and I
 I noticed much later that with very very loud music that uses compressors src-sinc-best-quality actually causes clipping. You can overcome this by pulling Spotify app volume down by a single nod. You can also switch to other resampling methods.
 
 In this place some of you may wonder what's the point of upsamplng. It's definitely a good question and I have no clear answer to that, after all when we resample we begin signal reconstruction starting at the sample data as streaming from the service provider. This said I can hear a clear improvement going from 41kHz to 96kHz. I expect that, for once, some of the materials are in 48kHz format to begin with so we don't squander that down to 41kHz. Moreover, by upsampling we actually increase the bit depth of the data points above 16bit and perhaps that may be audible as well. Finally we've reduced the compression by requesting 320kB/s data stream instead of the default 160kB/s - here there is no doubt, this is audible and has pretty much the same effect as going from normal to high, or very high sound quality setting in the official Spotify app.
-
-</textarea>
 
 </details>
 
